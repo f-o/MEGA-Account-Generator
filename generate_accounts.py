@@ -133,7 +133,7 @@ class MegaAccount:
         confirm_message = None
         for i in range(5):
             confirm_message = self.get_mail()
-            if confirm_message is not None and "MEGA Email Verification Required" in confirm_message.subject:
+            if confirm_message is not None and "verification required".lower() in confirm_message.subject.lower():
                 confirm_message = self.get_mail()
                 break
             time.sleep(5)
