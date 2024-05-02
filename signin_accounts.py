@@ -5,21 +5,22 @@
 
 import csv
 import subprocess
+import time
 
 
 def main():
     with open("accounts.csv") as csvfile:
         csvreader = csv.reader(csvfile)
         for row in csvreader:
-            if not row:
+            if not row or row[0] == "Email":
                 continue
 
             # CSV Format
-            # email, email_id, email_password, name, email:password, purpose
-            print(row)
+            # ["Email", "MEGA Password", "Usage", "Mail.tm Password", "Mail.tm ID", "Purpose"]
+            time.sleep(1)
 
-            email = row[4].split(":")[0].strip()
-            password = row[4].split(":")[1].strip()
+            email = row[0].strip()
+            password = row[1].strip()
 
             # login
             login = subprocess.run(
@@ -36,9 +37,9 @@ def main():
                 stderr=subprocess.PIPE,
             )
             if "/Root" in login.stdout:
-                print("Logged In", email)
+                print(f"\r> [{email}]: Successefully logged in", end="\033[K", flush=True)
             else:
-                print("Error", email)
+                print(f"\r> [{email}]: ERROR", end="\033[K\n", flush=True)
 
 
 if __name__ == "__main__":

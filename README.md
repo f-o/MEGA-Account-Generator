@@ -44,6 +44,7 @@
 
 * Generate new MEGA.nz accounts in bulk
 * Automatically verify emails
+* Fetch information about available storage
 * Keep accounts alive by logging in periodically
 
 <br>
@@ -67,10 +68,84 @@ $ pip install -r requirements.txt
 **Usage:**
 ```bash
 # Create new accounts
-$ python generate_accounts.py [-h] [-n NUMBER_OF_ACCOUNTS] [-p PASSWORD]
+$ python generate_accounts.py
 # Sign in to accounts to keep them alive
 $ python signin_accounts.py
 ```
+
+<details><summary>Click here for Advanced Usage</summary>
+
+```bash
+# Create new accounts with arguments
+$ python generate_accounts.py [-h] [-n NUMBER_OF_ACCOUNTS] [-t NUMBER_OF_THREADS] [-p PASSWORD]
+# Sign in to accounts to keep them alive
+$ python signin_accounts.py
+# Convert old CSV file to new format
+$ python convert_csv.py [-h] [-i INPUT_FILE]
+```
+
+- `-n` Number of new accounts to generate. If not specified, 3 accounts will be generated.
+- `-t` Number of threads to use for concurrent account creation. Maximum of 8.
+- `-p` Password to use for all accounts. If not specified, a random password will be generated for each account.
+- `-h` Show help.
+
+</details>
+
+<br>
+
+## Convert old CSV file to new format
+
+**What's this?**
+
+As of May 2024, the script has updated to use a new format for the CSV file. This means that the CSV file (`accounts.csv`) will be easier to use in the future.<br>
+Unfortunately the old format is not supported any more, so you will need to convert it to the new format.<br>
+You will need to convert the old CSV file **only if you have accounts in the ``accounts.csv`` file from before May 2024**.
+
+
+**Usage:**
+
+```bash
+# Convert old CSV file to new format
+$ python convert_csv.py [-h] [-i INPUT_FILE]
+```
+
+- `-i` Path to the input CSV file. If not specified, `accounts.csv` will be used.
+- `-h` Show help.
+
+<br>
+
+## FAQ
+
+- Will this automatically verify emails?
+  - Yes, the script will automatically fetch the verification link from the email, and use it to verify the account.
+
+- Can I log in to the accounts, on the web, after generating them?
+  - Yes, that is how this script is intended to be used. Simply copy the email address and password from the CSV file and log in to the account.
+
+- There are multiple passwords in the CSV file. Which one should I use?
+  - As of May 2024, all columns have appropriate headers.
+  - You will need to use the password in the second columns titled `MEGA Password`.
+
+- What's with the other password then? And why do I need the `Mail.tm ID`?
+  - The other password, in the `Mail.tm Password` column, is the password for the Mail.tm account.
+  - You can use this password to sign in to the temporary Mail.tm account on their website.
+  - In order to access the Mail.tm account, through their API, we also need the ID of the account. This is stored in the case it will be needed in the future.
+
+- What's with the `-p`/`--password` flag? Do I need it?
+  - The `-p` flag is optional.
+  - You can use this to specify a password for all accounts. If not specified, a random password will be generated for each account.
+
+- Can I generate multiple accounts in parallel?
+  - Yes, this script can generate multiple accounts in parallel using the `-t` flag.
+  - This is, however, not recommended, and will likely result in rate limits from Mail.tm.
+  - The script will automatically retry in the event of a rate limit up to 5 times.
+
+- Why can I only run 8 threads?
+  - Because of rate limits from Mail.tm.
+  - We do not want to overload their service, which they generously offer for free.
+
+- Something is broken? I'm having trouble using this script.
+  - Please [open an issue on GitHub](https://github.com/f-o/MEGA-Account-Generator/issues). Be sure to include information and screenshots.
 
 
 <br>
@@ -87,7 +162,7 @@ I highly recommend checking out both of their projects.
 This project is free and open source.<br>
 If you find it useful, please consider supporting the project by donating.
 <br><br>
-<a href="https://www.buymeacoffee.com/foxdev" target="_blank"><img src="./img/bmc-button.png" alt="Buy Me A Coffee" width="160"></a>
+<a href="https://www.buymeacoffee.com/foxdk" target="_blank"><img src="./img/bmc-button.png" alt="Buy Me A Coffee" width="160"></a>
 
 <br>
 

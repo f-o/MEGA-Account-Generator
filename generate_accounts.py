@@ -164,10 +164,10 @@ class MegaAccount:
             print(f"\n{self.email} - {self.password}")
 
             # save to file
-            with open("accounts.csv", "a") as csvfile:
+            with open("accounts.csv", "a", newline='') as csvfile:
                 csvwriter = csv.writer(csvfile)
                 # last column is for purpose (to be edited manually if required)
-                csvwriter.writerow([self.email, self.email_id, self.email_password, self.name, self.email+":"+self.password, "-"])
+                csvwriter.writerow([self.email, self.password, "-", self.email_password, self.email_id, "-"])
         else:
             print("Failed to verify account. Please open an issue on github.")
 
@@ -184,6 +184,19 @@ def new_account():
 
 
 if __name__ == "__main__":
+    # Check if CSV file exists, and if not create it and add header
+    if not os.path.exists("accounts.csv"):
+        with open("accounts.csv", "w") as csvfile:
+            csvwriter = csv.writer(csvfile)
+            csvwriter.writerow(["Email", "MEGA Password", "Usage", "Mail.tm Password", "Mail.tm ID", "Purpose"])
+
+    # Check if CSV file is using the correct format
+    with open("accounts.csv") as csvfile:
+        csvreader = csv.reader(csvfile)
+        if next(csvreader) != ["Email", "MEGA Password", "Usage", "Mail.tm Password", "Mail.tm ID", "Purpose"]:
+            print("CSV file is not in the correct format. Please use the convert_csv.py script to convert it.")
+            exit()
+    
     # Parse arguments and generate accounts accordingly
     if args.threads:
         print(f"Generating {args.number} accounts using {args.threads} threads.")
