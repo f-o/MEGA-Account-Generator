@@ -3,6 +3,7 @@
 
 import requests
 import subprocess
+import os
 import time
 import re
 import random
@@ -15,6 +16,14 @@ from pymailtm.pymailtm import CouldNotGetAccountException, CouldNotGetMessagesEx
 from faker import Faker
 fake = Faker()
 
+# Custom function for checking if the argument is below a certain value
+def check_limit(value):
+    ivalue = int(value)
+    if ivalue <= 8:
+        return ivalue
+    else:
+        raise argparse.ArgumentTypeError(f"You cannot use more than 8 threads.")
+
 # set up command line arguments
 parser = argparse.ArgumentParser(description="Create New Mega Accounts")
 parser.add_argument(
@@ -23,6 +32,13 @@ parser.add_argument(
     type=int,
     default=3,
     help="Number of accounts to create",
+)
+parser.add_argument(
+    "-t",
+    "--threads",
+    type=check_limit,
+    default=None,
+    help="Number of threads to use for concurrent account creation",
 )
 parser.add_argument(
     "-p",
@@ -44,19 +60,6 @@ def get_random_string(length):
     letters = string.ascii_lowercase + string.ascii_uppercase + string.digits
     return "".join(random.choice(letters) for _ in range(length))
 
-def generate_mail():
-    """Generate mail.tm account and return account credentials."""
-    mail = pymailtm.MailTm()
-
-    while True:
-        try:
-            acc = mail.get_account()
-            break
-        except CouldNotGetAccountException:
-            print("> Could not get account. Retrying...")
-
-    return acc.id_, acc.address, acc.password
-
 
 class MegaAccount:
     def __init__(self, name, password):
@@ -65,20 +68,23 @@ class MegaAccount:
 
     def generate_mail(self):
         """Generate mail.tm account and return account credentials."""
-        while True:
+        for i in range(5):
             try:
                 mail = pymailtm.MailTm()
-                break
-            except CouldNotGetAccountException:
-                print("> Could not get account. Retrying...")
-                time.sleep(random.randint(5, 15))
-
-        while True:
-            try:
                 acc = mail.get_account()
-                break
             except CouldNotGetAccountException:
-                print("> Could not get account. Retrying...")
+                print(f"\r> Could not get new Mail.tm account. Retrying ({i+1} of 5)...", end="\n")
+                sleep_output = ""
+                for i in range(random.randint(5, 15)):
+                    sleep_output += ". "
+                    print("\r"+sleep_output, end="\033[K", flush=True)
+                    time.sleep(1)
+            else:
+                break
+        else:
+            print("\nCould not get account. You are most likely blocked from Mail.tm.")
+            print("Please wait 5 minutes and try again with a lower number of accounts/threads.")
+            exit()
 
         self.email = acc.address
         self.email_id = acc.id_
@@ -102,10 +108,7 @@ class MegaAccount:
         # Generate mail.tm account and return account credentials.
         self.generate_mail()
 
-        print(f"Email: {self.email}")
-        print(f"Email Password: {self.email_password}")
-        print(f"Name: {self.name}")
-        print(f"Password: {self.password}")
+        print(f"\r> [{self.email}]: Registering account...", end="\033[K", flush=True)
 
         # begin resgistration
         registration = subprocess.run(
@@ -127,6 +130,8 @@ class MegaAccount:
         )
 
         self.verify_command = registration.stdout
+
+        return self.email
 
     def verify(self):
         # check if there is mail
@@ -155,8 +160,8 @@ class MegaAccount:
             universal_newlines=True,
         )
         if "registered successfully!" in str(verification.stdout):
-            print("> Successefully registered and verified with:")
-            print(f"{self.email} - {self.password}")
+            print(f"\r> [{self.email}] Successefully registered and verified.", end="\033[K", flush=True)
+            print(f"\n{self.email} - {self.password}")
 
             # save to file
             with open("accounts.csv", "a") as csvfile:
@@ -164,7 +169,7 @@ class MegaAccount:
                 # last column is for purpose (to be edited manually if required)
                 csvwriter.writerow([self.email, self.email_id, self.email_password, self.name, self.email+":"+self.password, "-"])
         else:
-            print("Failed.")
+            print("Failed to verify account. Please open an issue on github.")
 
 
 def new_account():
@@ -173,12 +178,24 @@ def new_account():
     else:
         password = args.password
     acc = MegaAccount(fake.name(), password)
-    acc.register()
-    print("> Registered. Waiting for verification email...")
+    email = acc.register()
+    print(f"\r> [{email}]: Registered. Waiting for verification email...", end="\033[K", flush=True)
     acc.verify()
 
 
 if __name__ == "__main__":
-    for count in range(args.number):
-        t = threading.Thread(target=new_account)
-        t.start()
+    # Parse arguments and generate accounts accordingly
+    if args.threads:
+        print(f"Generating {args.number} accounts using {args.threads} threads.")
+        threads = []
+        for i in range(args.number):
+            t = threading.Thread(target=new_account)
+            threads.append(t)
+            t.start()
+        for t in threads:
+            t.join()
+    else:
+        print(f"Generating {args.number} accounts.")
+        for _ in range(args.number):
+            new_account()
+
