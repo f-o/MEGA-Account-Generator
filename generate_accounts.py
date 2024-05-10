@@ -75,7 +75,7 @@ class MegaAccount:
             except CouldNotGetAccountException:
                 print(f"\r> Could not get new Mail.tm account. Retrying ({i+1} of 5)...", end="\n")
                 sleep_output = ""
-                for i in range(random.randint(5, 15)):
+                for i in range(random.randint(8, 15)):
                     sleep_output += ". "
                     print("\r"+sleep_output, end="\033[K", flush=True)
                     time.sleep(1)
