@@ -141,11 +141,13 @@ class MegaAccount:
             if confirm_message is not None and "verification required".lower() in confirm_message.subject.lower():
                 confirm_message = self.get_mail()
                 break
+            print(f"\r> [{self.email}]: Waiting for verification email... ({i+1} of 5)", end="\033[K", flush=True)
             time.sleep(5)
 
         # get verification link
         if confirm_message is None:
-            return
+            print(f"\r> [{self.email}]: Failed to verify account. There was no verification email. Please open an issue on github.", end="\033[K", flush=True)
+            exit()
 
         links = find_url(confirm_message.text)
 
