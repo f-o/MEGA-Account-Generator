@@ -58,30 +58,30 @@
 **Installation:**
 ```bash
 # Clone this repository
-$ git clone https://github.com/f-o/MEGA-Account-Generator.git
+  git clone https://github.com/f-o/MEGA-Account-Generator.git
 # Go into the repository
-$ cd MEGA-Account-Generator
+  cd MEGA-Account-Generator
 # Install dependencies
-$ pip install -r requirements.txt
+  pip install -r requirements.txt
 ```
 
 **Usage:**
 ```bash
 # Create new accounts
-$ python generate_accounts.py
+  python generate_accounts.py
 # Sign in to accounts to keep them alive
-$ python signin_accounts.py
+  python signin_accounts.py
 ```
 
 <details><summary>Click here for Advanced Usage</summary>
 
 ```bash
 # Create new accounts with arguments
-$ python generate_accounts.py [-h] [-n NUMBER_OF_ACCOUNTS] [-t NUMBER_OF_THREADS] [-p PASSWORD]
+  python generate_accounts.py [-h] [-n NUMBER_OF_ACCOUNTS] [-t NUMBER_OF_THREADS] [-p PASSWORD]
 # Sign in to accounts to keep them alive
-$ python signin_accounts.py
+  python signin_accounts.py
 # Convert old CSV file to new format
-$ python convert_csv.py [-h] [-i INPUT_FILE]
+  python convert_csv.py [-h] [-i INPUT_FILE]
 ```
 
 - `-n` Number of new accounts to generate. If not specified, 3 accounts will be generated.
@@ -106,7 +106,7 @@ You will need to convert the old CSV file **only if you have accounts in the ``a
 
 ```bash
 # Convert old CSV file to new format
-$ python convert_csv.py [-h] [-i INPUT_FILE]
+  python convert_csv.py [-h] [-i INPUT_FILE]
 ```
 
 - `-i` Path to the input CSV file. If not specified, `accounts.csv` will be used.
