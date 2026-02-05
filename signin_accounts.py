@@ -37,7 +37,7 @@ def main():
                 stderr=subprocess.PIPE,
             )
             if "/Root" in login.stdout:
-                print(f"\r> [{email}]: Successefully logged in", end="\033[K", flush=True)
+                print(f"\r> [{email}]: Successfully logged in", end="\033[K", flush=True)
             else:
                 print(f"\r> [{email}]: ERROR", end="\033[K\n", flush=True)
 
