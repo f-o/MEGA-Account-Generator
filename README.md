@@ -52,7 +52,7 @@
 ## How To Use
 
 **Prerequisites:**
-* [megatools](https://megatools.megous.com/) installed and added to your PATH
+* [megatools](https://xff.cz/megatools/builds/builds/) installed and added to your PATH
 * Python 3.6+
 
 **Installation:**
