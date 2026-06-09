@@ -33,6 +33,7 @@ def main():
                     password,
                 ],
                 universal_newlines=True,
+                encoding="utf-8",
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
             )
