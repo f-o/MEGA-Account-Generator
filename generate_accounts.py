@@ -162,7 +162,7 @@ class MegaAccount:
             universal_newlines=True,
         )
         if "registered successfully!" in str(verification.stdout):
-            print(f"\r> [{self.email}] Successefully registered and verified.", end="\033[K", flush=True)
+            print(f"\r> [{self.email}] Successfully registered and verified.", end="\033[K", flush=True)
             print(f"\n{self.email} - {self.password}")
 
             # save to file
